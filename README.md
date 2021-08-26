@@ -10,12 +10,30 @@ This repository shows an example using the following technologies:
 - Prerequisites listed for https://grpc.io/docs/languages/go/quickstart/#prerequisites
 - Prerequisites listed for https://grpc.io/docs/languages/dart/quickstart/#prerequisites
 
-# Build
+# Building
 
-To build the project, run:
+## Update BUILD files
+
+To update bazel BUILD files
 
 ```
 bazel run //:gazelle
+```
+
+## Listing build targets
+
+To list available build targets:
+
+```
+bazel query ...
+```
+
+# proto
+
+To update proto code generation:
+
+```
+bazel build //counter/v1:counter
 ```
 
 # Service

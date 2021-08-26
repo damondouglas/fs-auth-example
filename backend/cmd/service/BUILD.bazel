@@ -5,7 +5,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "fs-auth-example/backend/cmd/service",
     visibility = ["//visibility:private"],
-    deps = ["//backend/internal/environment"],
+    deps = [
+        "//backend/internal/environment",
+        "//backend/internal/service",
+    ],
 )
 
 go_binary(
