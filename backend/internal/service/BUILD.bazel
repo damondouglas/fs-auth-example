@@ -6,6 +6,7 @@ go_library(
     importpath = "fs-auth-example/backend/internal/service",
     visibility = ["//backend:__subpackages__"],
     deps = [
+        "//backend/internal/counter/v1:counter_v1",
         "//backend/internal/environment",
         "@org_golang_google_grpc//:go_default_library",
     ],
