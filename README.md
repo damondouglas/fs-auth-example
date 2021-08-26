@@ -9,3 +9,19 @@ This repository shows an example using the following technologies:
 
 - Prerequisites listed for https://grpc.io/docs/languages/go/quickstart/#prerequisites
 - Prerequisites listed for https://grpc.io/docs/languages/dart/quickstart/#prerequisites
+
+# Build
+
+To build the project, run:
+
+```
+bazel run //:gazelle
+```
+
+# Service
+
+To run the backend service:
+
+```
+bazel run //backend/cmd/service
+```

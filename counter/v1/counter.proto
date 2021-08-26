@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "fs_auth_example/internal/counter/v1";
+
+package counter.v1;
+
+service CounterService {
+    rpc Count (CountRequest) returns (CountResponse) {}
+}
+
+message CountRequest {
+    int64 count = 1; 
+}
+
+message CountResponse {
+    int64 count = 1;
+}
