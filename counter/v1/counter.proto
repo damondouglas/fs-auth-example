@@ -5,13 +5,30 @@ option go_package = "fs_auth_example/internal/counter/v1";
 package counter.v1;
 
 service CounterService {
-    rpc Count (CountRequest) returns (CountResponse) {}
+    rpc ListCounts(ListCountsRequest) returns (ListCountsResponse) {}
+    rpc UpdateCount(UpdateCountRequest) returns (UpdateCountResponse) {}
+    rpc StreamCounts(StreamCountsRequest) returns (stream Count) {}
 }
 
-message CountRequest {
+message Count {
+    string name = 1;
+    int64 count = 2;
+}
+
+message ListCountsRequest {
+    int64 limit = 1;
+}
+
+message ListCountsResponse {
+    repeated Count items = 1;
+}
+
+message StreamCountsRequest {}
+
+message UpdateCountRequest {
     int64 count = 1; 
 }
 
-message CountResponse {
+message UpdateCountResponse {
     int64 count = 1;
 }

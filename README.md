@@ -10,30 +10,13 @@ This repository shows an example using the following technologies:
 - Prerequisites listed for https://grpc.io/docs/languages/go/quickstart/#prerequisites
 - Prerequisites listed for https://grpc.io/docs/languages/dart/quickstart/#prerequisites
 
-# Building
-
-## Update BUILD files
-
-To update bazel BUILD files
-
-```
-bazel run //:gazelle
-```
-
-## Listing build targets
-
-To list available build targets:
-
-```
-bazel query ...
-```
-
 # proto
 
-To update proto code generation:
+For convenience, this project uses [buf](https://docs.buf.build/introduction) to build protobuf.
+If you prefer not to use this utility, follow specific language generation instructions as documented (See https://grpc.io).
 
 ```
-bazel build //counter/v1:counter
+buf generate
 ```
 
 # Service
@@ -41,5 +24,13 @@ bazel build //counter/v1:counter
 To run the backend service:
 
 ```
-bazel run //backend/cmd/service
+cd backend
+go run ./cmd/service
+```
+
+or show usage
+
+```
+cd backend
+go run ./cmd/service -help
 ```
