@@ -8,18 +8,30 @@ import (
 
 var (
 	EnvHttpPort EnvVariable = "HTTP_PORT"
-	EnvTcpPort  EnvVariable = "TCP_PORT"
-	FlagLocal               = &FlagVariable{
+
+	EnvTcpPort EnvVariable = "TCP_PORT"
+
+	EnvFirestoreEmulatorHost EnvVariable = "FIRESTORE_EMULATOR_HOST"
+
+	FlagLocal = &FlagVariable{
 		Flag: &flag.Flag{
-			Name:  "local",
-			Usage: "Flag as local environment",
+			Name:     "local",
+			Usage:    "Flag as local environment",
+			DefValue: "false",
+			Value: &boolValue{
+				value: false,
+			},
 		},
 	}
 
 	FlagVerbose = &FlagVariable{
 		Flag: &flag.Flag{
-			Name:  "verbose",
-			Usage: "Turn on verbose logging",
+			Name:     "verbose",
+			Usage:    "Turn on verbose logging",
+			DefValue: "false",
+			Value: &boolValue{
+				value: false,
+			},
 		},
 	}
 
@@ -41,6 +53,6 @@ var (
 )
 
 func init() {
-	FlagLocal.value = flag.Bool(FlagLocal.Name, false, FlagLocal.Usage)
-	FlagVerbose.value = flag.Bool(FlagVerbose.Name, false, FlagVerbose.Usage)
+	flag.Bool(FlagLocal.Name, false, FlagLocal.Usage)
+	flag.Bool(FlagVerbose.Name, false, FlagVerbose.Usage)
 }

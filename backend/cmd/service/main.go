@@ -4,8 +4,9 @@ import (
 	"context"
 	"flag"
 	"fs-auth-example/backend/internal/environment"
-	"log"
+	"fs-auth-example/backend/internal/service"
 	"os"
+	"sync"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 )
 
 func vars(ctx context.Context) error {
-	if (env.IsLocal()) {
+	if env.IsLocal() {
 		if err := environment.LoadLocalEnv(); err != nil {
 			return err
 		}
@@ -38,31 +39,26 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	log.Println(env.String())
+	wg := &sync.WaitGroup{}
+	svc, err := service.FromEnvironment(ctx, env)
+	if err != nil {
+		return err
+	}
+	if env.PortHttp.Exists() {
+		wg.Add(1)
+		go func(ctx context.Context) {
+			service.ListenHTTP(ctx, env, svc)
+			wg.Done()
+		}(ctx)
+	}
+	if env.PortTcp.Exists() {
+		wg.Add(1)
+		go func(ctx context.Context) {
+			service.ListenTCP(ctx, env, svc)
+			wg.Done()
+		}(ctx)
+	}
+
+	wg.Wait()
 	return nil
-	// lis, err := net.Listen("tcp", address)
-	// if err != nil {
-	// 	return err
-	// }
-	// ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-	// defer cancel()
-	// errChan := make(chan error)
-	// svc := service.FromEnvironment(ctx, env)
-
-	// go func(ctx context.Context, errChan chan error) {
-	// 	if err := svc.Serve(lis); err != nil {
-	// 		errChan <- err
-	// 		return
-	// 	}
-	// }(ctx, errChan)
-
-	// for {
-	// 	select {
-	// 	case err := <-errChan:
-	// 		return err
-	// 	case <-ctx.Done():
-	// 		log.Println("interupt signal received; shutting down ...")
-	// 		return nil
-	// 	}
-	// }
 }

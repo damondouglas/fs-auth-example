@@ -3,23 +3,29 @@ package environment
 import (
 	"encoding/json"
 	"fmt"
+	"fs-auth-example/backend/internal/gcloud"
 	"strings"
+
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 )
 
 var (
 	DefaultEnvironment = &Environment{
-		PortHttp: EnvHttpPort,
-		PortTcp:  EnvTcpPort,
-		Verbose:  FlagVerbose,
-		Local:    FlagLocal,
+		FirestoreEmulatorHost: EnvFirestoreEmulatorHost,
+		PortHttp:              EnvHttpPort,
+		PortTcp:               EnvTcpPort,
+		Verbose:               FlagVerbose,
+		Local:                 FlagLocal,
 	}
 )
 
 type Environment struct {
-	PortHttp Variable
-	PortTcp  Variable
-	Verbose  Variable
-	Local    Variable
+	FirestoreEmulatorHost Variable
+	PortHttp              Variable
+	PortTcp               Variable
+	Verbose               Variable
+	Local                 Variable
 }
 
 func (env *Environment) String() string {
@@ -75,4 +81,37 @@ func Missing(vars ...Variable) error {
 	}
 
 	return fmt.Errorf("fatal: required environment or flag variables are missing (note: requires flag.Parse()); environment variables: %s; flag variables: %s", missingEnvMessage, missingFlagMessage)
+}
+
+func (env *Environment) Project() (string, error) {
+	return gcloud.Config.Project()
+}
+
+func (env *Environment) ApplyFirestoreOpts(opts *[]option.ClientOption) error {
+	if !env.IsLocal() {
+		return nil
+	}
+
+	if !env.FirestoreEmulatorHost.Exists() {
+		return nil
+	}
+
+	conn, err := grpc.Dial(env.FirestoreEmulatorHost.String(), grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+
+	*opts = append(*opts, option.WithGRPCConn(conn))
+	return nil
+}
+
+func (env *Environment) IsVerbose() bool {
+	v := env.Verbose.Value()
+	if v == nil {
+		return false
+	}
+	if vv, ok := v.(bool); ok {
+		return vv
+	}
+	return false
 }

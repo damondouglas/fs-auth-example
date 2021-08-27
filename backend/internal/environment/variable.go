@@ -8,7 +8,6 @@ import (
 
 type EnvVariable string
 type FlagVariable struct {
-	value *bool
 	*flag.Flag
 }
 
@@ -51,9 +50,37 @@ func (v *FlagVariable) Exists() bool {
 }
 
 func (v *FlagVariable) String() string {
-	return fmt.Sprint(*v.value)
+	vv := v.lookup()
+	if vv == nil {
+		return ""
+	}
+	return vv.Value.String()
 }
 
 func (v *FlagVariable) Value() interface{} {
-	return v.value
+	vv := &boolValue{}
+	if err := vv.Set(v.String()); err != nil {
+		return nil
+	}
+	return vv.value
+}
+
+type boolValue struct {
+	value bool
+}
+
+func (val *boolValue) String() string {
+	return fmt.Sprint(val.value)
+}
+
+func (val *boolValue) Set(value string) error {
+	switch value {
+	case "true":
+		val.value = true
+		return nil
+	case "false":
+		val.value = false
+		return nil
+	}
+	return fmt.Errorf("could not parse %s to bool", value)
 }

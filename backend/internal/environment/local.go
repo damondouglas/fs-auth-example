@@ -9,8 +9,14 @@ import (
 )
 
 func (env *Environment) IsLocal() bool {
-	local := env.Local.(*FlagVariable)
-	return *local.value
+	v := env.Local.Value()
+	if v == nil {
+		return false
+	}
+	if vv, ok := v.(bool); ok {
+		return vv
+	}
+	return false
 }
 
 func LoadLocalEnv() error {
