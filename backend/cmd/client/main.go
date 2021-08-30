@@ -12,10 +12,9 @@ import (
 )
 
 var (
-	logger  = log.New(os.Stdout, "CLIENT: ", log.LstdFlags)
-	env     = environment.DefaultEnvironment
-	help    = flag.Bool("help", false, "Show help")
-	useHttp = flag.Bool("http", false, "Make calls using HTTP")
+	logger = log.New(os.Stdout, "CLIENT: ", log.LstdFlags)
+	env    = environment.DefaultEnvironment
+	help   = flag.Bool("help", false, "Show help")
 )
 
 func vars(ctx context.Context) error {

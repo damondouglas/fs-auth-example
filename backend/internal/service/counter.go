@@ -8,14 +8,7 @@ import (
 )
 
 func (svc *service) ListCounts(ctx context.Context, req *counter.ListCountsRequest) (*counter.ListCountsResponse, error) {
-	return &counter.ListCountsResponse{
-		Items: []*counter.Count{
-			{
-				Name:  "foo",
-				Count: 100,
-			},
-		},
-	}, nil
+	return &counter.ListCountsResponse{}, nil
 }
 
 func (svc *service) UpdateCount(ctx context.Context, req *counter.UpdateCountRequest) (*counter.UpdateCountResponse, error) {

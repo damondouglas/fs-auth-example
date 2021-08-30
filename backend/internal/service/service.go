@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fs-auth-example/backend/internal/auth"
 	counter "fs-auth-example/backend/internal/counter/v1"
 	"fs-auth-example/backend/internal/environment"
 	"fs-auth-example/backend/internal/fs"
@@ -24,6 +25,7 @@ func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...
 	if env.IsVerbose() {
 		logger.Printf("environment: %s\n", env.String())
 	}
+	opts = append(opts, auth.WithUnaryAuthorization(env), auth.WithStreamAuthorization(env))
 	grpcServer := grpc.NewServer(opts...)
 	fsClient, err := fs.FromEnvironment(ctx, env)
 	if err != nil {

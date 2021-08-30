@@ -5,16 +5,9 @@ import (
 	"os/exec"
 )
 
-var (
-	Config = &GCloudConfig{}
-)
-
 const (
 	name = "gcloud"
 )
-
-type GCloudConfig struct {
-}
 
 func which() (string, error) {
 	return exec.LookPath(name)
@@ -28,8 +21,8 @@ func cmd(args ...string) (*exec.Cmd, error) {
 	return exec.Command(path, args...), nil
 }
 
-func (config *GCloudConfig) Project() (string, error) {
-	c, err := cmd("config", "get-value", "project")
+func output(args ...string) (string, error) {
+	c, err := cmd(args...)
 	if err != nil {
 		return "", err
 	}

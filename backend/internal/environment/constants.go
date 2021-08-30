@@ -7,11 +7,11 @@ import (
 )
 
 var (
+	EnvClientId EnvVariable = "CLIENT_ID"
+
 	EnvHttpPort EnvVariable = "HTTP_PORT"
 
 	EnvTcpPort EnvVariable = "TCP_PORT"
-
-	EnvFirestoreEmulatorHost EnvVariable = "FIRESTORE_EMULATOR_HOST"
 
 	FlagLocal = &FlagVariable{
 		Flag: &flag.Flag{

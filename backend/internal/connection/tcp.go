@@ -14,8 +14,8 @@ func (conn *Connection) TCP(ctx context.Context, opts ...grpc.DialOption) (*grpc
 	if conn.env.TcpAddress() == "" {
 		return nil, fmt.Errorf("fatal: could not derive TCP connection from empty address; environment: %s", conn.env.String())
 	}
-	if conn.env.IsLocal() {
-		opts = append(opts, grpc.WithInsecure())
+	if err := conn.env.ApplyDialOptions(&opts); err != nil {
+		return nil, err
 	}
 	return grpc.DialContext(ctx, conn.env.TcpAddress(), opts...)
 }
