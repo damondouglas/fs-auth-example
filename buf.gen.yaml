@@ -8,3 +8,6 @@ plugins:
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
+  - name: dart
+    out: frontend/lib/src/generated
+

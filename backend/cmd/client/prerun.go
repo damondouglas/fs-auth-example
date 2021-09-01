@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fs-auth-example/backend/internal/auth"
 	counter "fs-auth-example/backend/internal/counter/v1"
 	"github.com/spf13/cobra"
@@ -83,5 +85,14 @@ func applyTLSOpt() error {
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 		return nil
 	}
+	systemRoots, err := x509.SystemCertPool()
+	if err != nil {
+		return err
+	}
+	creds := credentials.NewTLS(&tls.Config{
+		RootCAs: systemRoots,
+	})
+	opts = append(opts, grpc.WithTransportCredentials(creds))
+
 	return nil
 }

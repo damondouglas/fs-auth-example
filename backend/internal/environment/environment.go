@@ -7,7 +7,6 @@ import (
 
 var (
 	DefaultEnvironment = &Environment{
-		ClientId: EnvClientId,
 		PortHttp: EnvHttpPort,
 		PortTcp:  EnvTcpPort,
 		project: EnvProject,
@@ -15,7 +14,6 @@ var (
 )
 
 type Environment struct {
-	ClientId Variable
 	PortHttp Variable
 	PortTcp  Variable
 	project Variable
@@ -24,7 +22,6 @@ type Environment struct {
 func (env *Environment) String() string {
 	s := map[string]string{}
 	for _, v := range []Variable{
-		env.ClientId,
 		env.PortHttp,
 		env.PortTcp,
 	} {
