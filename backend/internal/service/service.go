@@ -6,10 +6,9 @@ import (
 	counter "fs-auth-example/backend/internal/counter/v1"
 	"fs-auth-example/backend/internal/environment"
 	"fs-auth-example/backend/internal/fs"
+	"google.golang.org/grpc"
 	"log"
 	"os"
-
-	"google.golang.org/grpc"
 )
 
 var (
@@ -17,24 +16,25 @@ var (
 )
 
 type service struct {
-	env      *environment.Environment
+	authorizer *auth.Authorizer
 	fsClient *fs.Client
+	env      *environment.Environment
 }
 
 func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...grpc.ServerOption) (*grpc.Server, error) {
-	if env.IsVerbose() {
-		logger.Printf("environment: %s\n", env.String())
-	}
-	opts = append(opts, auth.WithUnaryAuthorization(env), auth.WithStreamAuthorization(env))
-	grpcServer := grpc.NewServer(opts...)
-	fsClient, err := fs.FromEnvironment(ctx, env)
+	authorizer, err := auth.NewAuthorizer(ctx, env)
 	if err != nil {
-		logger.Fatalf("fatal: could not instantiate firestore client from environment: %s; err: %s\n", env.String(), err)
 		return nil, err
 	}
+	fsClient, err := fs.FromEnvironment(ctx, env)
+	if err != nil {
+		return nil, err
+	}
+	grpcServer := grpc.NewServer(opts...)
 	counter.RegisterCounterServiceServer(grpcServer, &service{
-		fsClient: fsClient,
+		authorizer: authorizer,
 		env:      env,
+		fsClient: fsClient,
 	})
 	return grpcServer, nil
 }

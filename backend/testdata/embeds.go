@@ -1,8 +1,6 @@
 package testdata
 
-import (
-	_ "embed"
-)
+import _ "embed"
 
 //go:embed .env
-var DotEnv []byte
+var dotEnv []byte

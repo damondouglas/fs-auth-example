@@ -8,8 +8,13 @@ import (
 	"google.golang.org/api/option"
 )
 
+const (
+	countsPath = "counts"
+)
+
 type Client struct {
 	*firestore.Client
+	Counts *Counts
 }
 
 func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...option.ClientOption) (*Client, error) {
@@ -18,15 +23,16 @@ func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...
 		return nil, err
 	}
 
-	if err := env.ApplyFirestoreOpts(&opts); err != nil {
-		return nil, err
-	}
-
 	client, err := firestore.NewClient(ctx, project, opts...)
 	if err != nil {
 		return nil, err
 	}
+	counts := client.Collection(countsPath)
 	return &Client{
 		Client: client,
+		Counts: &Counts{
+			CollectionRef: *counts,
+			client: client,
+		},
 	}, nil
 }

@@ -2,89 +2,134 @@ package main
 
 import (
 	"context"
-	"flag"
-	"fs-auth-example/backend/internal/connection"
+	"fmt"
 	counter "fs-auth-example/backend/internal/counter/v1"
 	"fs-auth-example/backend/internal/environment"
-	"log"
+	"fs-auth-example/backend/testdata"
+	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 	"os"
 	"os/signal"
+	"strconv"
 )
 
 var (
-	logger = log.New(os.Stdout, "CLIENT: ", log.LstdFlags)
-	env    = environment.DefaultEnvironment
-	help   = flag.Bool("help", false, "Show help")
+	rootCmd = &cobra.Command{
+		Use:   "client",
+		Short: "Call gRPC counter service",
+	}
+
+	listCmd = &cobra.Command{
+		Use:     "list",
+		Short:   "List counts",
+		PreRunE: preRun,
+		RunE:    list,
+	}
+
+	updateCmd = &cobra.Command{
+		Use:     "update [COUNT]",
+		Short:   "Update user count with COUNT (COUNT >= 0; default: 0)",
+		PreRunE: preRun,
+		RunE:    update,
+		Args: cobra.MaximumNArgs(1),
+	}
+
+	streamCmd = &cobra.Command{
+		Use:     "stream",
+		Short:   "Stream counts",
+		PreRunE: preRun,
+		RunE:    stream,
+	}
+
+	endpoint      string
+	limit int64
+	opts          []grpc.DialOption
+	counterClient counter.CounterServiceClient
 )
 
-func vars(ctx context.Context) error {
-	if env.IsLocal() {
-		if err := environment.LoadLocalEnv(); err != nil {
-			return err
-		}
+func init() {
+	env()
+	rootCmd.PersistentFlags().StringVar(&endpoint, "endpoint", fmt.Sprintf("localhost:%s", environment.DefaultEnvironment.PortTcp.String()), "Server endpoint")
+	rootCmd.AddCommand(listCmd, updateCmd, streamCmd)
+	listCmd.Flags().Int64VarP(&limit, "limit", "n", -1, "Limit results (<0 is no limit)")
+}
+
+func env() {
+	if err := testdata.LoadDotEnv(); err != nil {
+		panic(err)
 	}
-	return nil
 }
 
 func main() {
-	flag.Parse()
-	if *help {
-		environment.Usage()
-		os.Exit(0)
-	}
-	ctx := context.Background()
-	if err := vars(ctx); err != nil {
-		panic(err)
-	}
-	if err := run(ctx); err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}
 }
 
-func run(ctx context.Context) error {
-	errChan := make(chan error)
-	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
-	defer cancel()
-	if env.IsVerbose() {
-		logger.Println(env.String())
-	}
-
-	conn, err := connection.FromEnvironment(env).TCP(ctx)
-	if err != nil {
-		return err
-	}
-
-	client := counter.NewCounterServiceClient(conn)
-	resp, err := client.ListCounts(ctx, &counter.ListCountsRequest{})
+func list(c *cobra.Command, _ []string) error {
+	ctx := c.Context()
+	resp, err := counterClient.ListCounts(ctx, &counter.ListCountsRequest{
+		Limit: limit,
+	})
 	if err != nil {
 		return err
 	}
 	for _, item := range resp.Items {
-		log.Println(item.String())
+		fmt.Println(item.String())
+	}
+	return nil
+}
+
+func update(c *cobra.Command, args []string) error {
+	ctx := c.Context()
+	var count int64 = 0
+	if len(args) > 0 {
+		v, err := strconv.ParseInt(args[0], 10, 64)
+		if err != nil {
+			return err
+		}
+		count = v
 	}
 
-	stream, err := client.StreamCounts(ctx, &counter.StreamCountsRequest{})
+	resp, err := counterClient.UpdateCount(ctx, &counter.UpdateCountRequest{
+		Count: count,
+	})
+
 	if err != nil {
 		return err
 	}
 
-	go func(ctx context.Context, errChan chan error) {
+	fmt.Printf("updated with %v\n", resp.Count)
+
+	return nil
+}
+
+func stream(c *cobra.Command, _ []string) error {
+	ctx := c.Context()
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
+	client, err := counterClient.StreamCounts(ctx, &counter.StreamCountsRequest{})
+	if err != nil {
+		return err
+	}
+	errChan := make(chan error)
+	go func(ctx context.Context) {
 		for {
-			count, err := stream.Recv()
+			count, err := client.Recv()
 			if err != nil {
 				errChan <- err
-				return
 			}
-			log.Println(count.String())
+			if count == nil {
+				continue
+			}
+			fmt.Println(count.String())
 		}
-	}(ctx, errChan)
-
+	}(ctx)
 	for {
 		select {
-		case err := <-errChan:
+		case err := <- errChan:
 			return err
-		case <-ctx.Done():
-			logger.Println("interupt signal received, terminating...")
+		case <- ctx.Done():
 			return nil
 		}
 	}
