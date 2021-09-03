@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 
+import 'constants.dart' as constants;
+
+/**
+ * Login performs authentication flow using a form to acquire email/password
+ * credentials from a user.
+ */
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
@@ -14,8 +20,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    var email = 'user1@example.com';
-    var password = 'q1w2e3r4t5';
+    var email = '';
+    var password = '';
     return Center(
       child: Container(
         height: 400,
@@ -69,7 +75,7 @@ class _LoginState extends State<Login> {
                     }
                     _login(email, password)
                     .then((_) {
-                      Navigator.of(context).pushNamed('/counts');
+                      Navigator.of(context).pushNamed(constants.kRouteCounts);
                     }).catchError((err) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('$err'))

@@ -19,18 +19,10 @@ If you prefer not to use this utility, follow specific language generation instr
 buf generate
 ```
 
-# Service
+# Backend
 
-To run the backend service:
+See [backend/README](backend/README.md) for details on setup and running.
 
-```
-cd backend
-go run ./cmd/service
-```
+# Frontend
 
-or show usage
-
-```
-cd backend
-go run ./cmd/service -help
-```
+See [frontend/README](frontend/README.md) for details on setup and running.

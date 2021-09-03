@@ -9,6 +9,9 @@ const _http = 'http';
 const _port = 'port';
 const _tcp = 'tcp';
 
+/**
+ * ConfigLoaderProvider injects inheritable configuration data into the application.
+ */
 class ConfigLoaderProvider extends InheritedWidget {
   final Widget child;
   final ConfigLoader configLoader;
@@ -33,6 +36,9 @@ Future<Map<String, dynamic>> loadConfigMap() async {
   return jsonDecode(data);
 }
 
+/**
+ * ConfigLoader loads application configuration data.
+ */
 class ConfigLoader {
   final Map<String, dynamic> _data;
   ConfigLoader(this._data);
@@ -46,6 +52,9 @@ class ConfigLoader {
   Config get tcp => Config(_tcpData);
 }
 
+/**
+ * Config stores application configuration data.
+ */
 class Config {
   final Map<String, dynamic> _data;
   Config(this._data);

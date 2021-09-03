@@ -6,7 +6,7 @@ This directory holds the configuration details for the firebase app.
 
 1. Create a firebase.json file.  The final path should be: `frontend/web/config/firebase.js`
 
-2. Instantiate the `firebaseConfig` variable with:
+2. Instantiate the `firebaseConfig` variable with required firebase app configuration details.
 
 ```
 var firebaseConfig = {
