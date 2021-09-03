@@ -46,5 +46,5 @@ func (auth *Authorizer) validate(ctx context.Context) (*AccountInfo, error) {
 		logger.Println(fmt.Errorf("validate: %w", err))
 		return nil, err
 	}
-	return auth.claims(ctx, tok)
+	return auth.verify(ctx, tok)
 }

@@ -1,4 +1,5 @@
-# About
+Frontend
+========
 
 This directory holds code for the frontend targeting web and mobile platforms.
 
@@ -6,6 +7,7 @@ This directory holds code for the frontend targeting web and mobile platforms.
 
 The following is required to run, build, and maintain the application:
 - Flutter: https://flutter.dev
+- Firebase CLI: https://firebase.google.com/docs/cli
 - Firebase project: https://console.firebase.google.com
 - Deployed and configured backend (See [backend/README](../backend/README.md))
 

@@ -12,11 +12,13 @@ const (
 	countsPath = "counts"
 )
 
+// Client wraps a firestore.Client
 type Client struct {
 	*firestore.Client
 	Counts *Counts
 }
 
+// FromEnvironment instantiates a Client from details in the Environment configuration
 func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...option.ClientOption) (*Client, error) {
 	project, err := env.Project()
 	if err != nil {

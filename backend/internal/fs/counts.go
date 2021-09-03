@@ -18,16 +18,19 @@ const (
 	nameKey  = "Name"
 )
 
+// Counts is a wrapper for a firestore Collection for storing count data
 type Counts struct {
 	firestore.CollectionRef
 	client *firestore.Client
 }
 
+// Count is a wrapper for a firestore Document holding count data
 type Count struct {
 	firestore.DocumentSnapshot
 	client *firestore.Client
 }
 
+// List stored count data
 func (counts *Counts) List(ctx context.Context, request *counter.ListCountsRequest) ([]*counter.Count, error) {
 	var result []*counter.Count
 	var n int64 = -1
@@ -55,6 +58,7 @@ func (counts *Counts) List(ctx context.Context, request *counter.ListCountsReque
 	}
 }
 
+// snapshots listens for changes in the count collection
 func (counts *Counts) snapshots(ctx context.Context, countChan chan *Count, errChan chan error) {
 	itr := counts.Snapshots(ctx)
 	for {
@@ -77,6 +81,7 @@ func (counts *Counts) snapshots(ctx context.Context, countChan chan *Count, errC
 	}
 }
 
+// Stream count data to the countChan channel
 func (counts *Counts) Stream(ctx context.Context, countChan chan *Count, errChan chan error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -91,6 +96,7 @@ func (counts *Counts) Stream(ctx context.Context, countChan chan *Count, errChan
 	}
 }
 
+// get count data stored in a firestore Document
 func (counts *Counts) get(ctx context.Context, name string) (*Count, error) {
 	itr := counts.Where(nameKey, eqOp, name).Documents(ctx)
 	snaps, err := itr.GetAll()

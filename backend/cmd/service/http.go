@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// listenHttp binds the handler on the TCP network address provided by the Environment
 func listenHttp(ctx context.Context, errChan chan error, env *environment.Environment, handler http.Handler) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

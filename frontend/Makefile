@@ -3,3 +3,9 @@ help:		## Show this help.
 
 web-server:	## Run on web-server device
 	flutter run -d web-server --web-port=5000
+
+build-web:	## Build the web application
+	flutter build web
+
+deploy-web:	## Deploy the web application
+	firebase deploy

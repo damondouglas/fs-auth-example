@@ -14,6 +14,7 @@ const (
 	ClaimsKey        = "AccountInfo"
 )
 
+// TokenFromContext provides, if available, oauth2.Token stored in a context.Context
 func (auth *Authorizer) TokenFromContext(ctx context.Context) (*oauth2.Token, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -22,6 +23,7 @@ func (auth *Authorizer) TokenFromContext(ctx context.Context) (*oauth2.Token, er
 	return auth.tokenFromMetadata(md)
 }
 
+// tokenFromMetadata provides, if available, oauth2.Token stored in metadata.MD
 func (auth *Authorizer) tokenFromMetadata(md metadata.MD) (*oauth2.Token, error) {
 	if md == nil {
 		return nil, fmt.Errorf("metadata is nil from context")

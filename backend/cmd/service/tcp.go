@@ -8,6 +8,7 @@ import (
 	"net"
 )
 
+// listenTcp binds the grpc.Server to the TCP address provided by the Environment
 func listenTcp(ctx context.Context, errChan chan error, env *environment.Environment, svc *grpc.Server) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

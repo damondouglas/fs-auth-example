@@ -1,9 +1,17 @@
 # About
 
-This repository shows an example using the following technologies:
+The purpose of this example is to demonstrate a web and mobile UI communicating
+via gRPC to a backend service.  Combining the use of firestore and gRPC within a
+web and mobile context may be redundant since there are secure ways to connect
+a web and mobile application directly to firestore/firebase.  Nonetheless, the
+value of this example may additionally show how a gRPC service may connect and
+manage firestore data.
+
+The following technologies are used in this example:
 - Google Cloud Run
 - gRPC and gRPC-web
 - Firebase and Firestore
+- Protocol Buffers
 
 # Requirements
 
