@@ -119,6 +119,7 @@ func (counts *Counts) get(ctx context.Context, name string) (*Count, error) {
 	}, nil
 }
 
+// create a Count document
 func (counts *Counts) create(ctx context.Context, name string) (*Count, error) {
 	colRef := counts.CollectionRef
 	docRef, _, err := colRef.Add(ctx, &counter.Count{
@@ -139,6 +140,7 @@ func (counts *Counts) create(ctx context.Context, name string) (*Count, error) {
 	}, nil
 }
 
+// GetOrCreate a Count document
 func (counts *Counts) GetOrCreate(ctx context.Context, name string) (*Count, error) {
 	count, err := counts.get(ctx, name)
 	if err != nil {
@@ -150,6 +152,7 @@ func (counts *Counts) GetOrCreate(ctx context.Context, name string) (*Count, err
 	return counts.create(ctx, name)
 }
 
+// Data provides the counter.Count data associated with the document
 func (count *Count) Data() (*counter.Count, error) {
 	var result *counter.Count
 	snap := count.DocumentSnapshot
@@ -159,6 +162,7 @@ func (count *Count) Data() (*counter.Count, error) {
 	return result, nil
 }
 
+// Update a Count document with a value
 func (count *Count) Update(ctx context.Context, value int64) error {
 	return count.client.RunTransaction(ctx, func(ctx context.Context, transaction *firestore.Transaction) error {
 		if err := transaction.Update(count.Ref, []firestore.Update{

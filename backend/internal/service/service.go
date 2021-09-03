@@ -21,6 +21,7 @@ type service struct {
 	env      *environment.Environment
 }
 
+// FromEnvironment instantiates a grpc.Server from the environment.Environment
 func FromEnvironment(ctx context.Context, env *environment.Environment, opts ...grpc.ServerOption) (*grpc.Server, error) {
 	authorizer, err := auth.NewAuthorizer(ctx, env)
 	if err != nil {

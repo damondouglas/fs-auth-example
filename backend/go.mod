@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	cloud.google.com/go/firestore v1.5.0
+	firebase.google.com/go/v4 v4.6.0
 	github.com/improbable-eng/grpc-web v0.14.1
 	github.com/joho/godotenv v1.3.0
 	github.com/rs/cors v1.8.0
@@ -18,7 +19,6 @@ require (
 require (
 	cloud.google.com/go v0.93.3 // indirect
 	cloud.google.com/go/storage v1.10.0 // indirect
-	firebase.google.com/go/v4 v4.6.0 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
