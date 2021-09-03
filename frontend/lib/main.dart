@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 
 void main() {
-  print(foundation.kIsWeb);
   WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
 }

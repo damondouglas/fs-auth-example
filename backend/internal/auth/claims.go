@@ -2,21 +2,26 @@ package auth
 
 import (
 	"context"
+	"firebase.google.com/go/v4/auth"
+	"fmt"
 	"golang.org/x/oauth2"
-	"google.golang.org/api/identitytoolkit/v3"
 )
 
-type AccountInfo identitytoolkit.GetAccountInfoResponse
+const (
+	emailKey = "email"
+)
 
-func (identity *Identity) claims(tok *oauth2.Token) (*AccountInfo, error) {
-	resp, err := identity.internal.Relyingparty.GetAccountInfo(&identitytoolkit.IdentitytoolkitRelyingpartyGetAccountInfoRequest{
-		IdToken: tok.AccessToken,
-	}).Do()
-	if err != nil {
-		return nil, err
+type AccountInfo auth.Token
+
+func (info *AccountInfo) Email() string {
+	itr, ok := info.Claims[emailKey]
+	if !ok {
+		return ""
 	}
-
-	return (*AccountInfo)(resp), nil
+	if v, ok := itr.(string); ok {
+		return v
+	}
+	return ""
 }
 
 func (auth *Authorizer) AccountInfoFromContext(ctx context.Context) *AccountInfo {
@@ -28,4 +33,13 @@ func (auth *Authorizer) AccountInfoFromContext(ctx context.Context) *AccountInfo
 		return c
 	}
 	return nil
+}
+
+func (auth *Authorizer) claims(ctx context.Context, tok *oauth2.Token) (*AccountInfo, error) {
+	resp, err := auth.internal.VerifyIDToken(ctx, tok.AccessToken)
+	if err != nil {
+		logger.Println(fmt.Errorf("claims: %w", err))
+		return nil, err
+	}
+	return (*AccountInfo)(resp), nil
 }

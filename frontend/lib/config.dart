@@ -1,42 +1,55 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const _configAssetKey = 'assets/config.json';
-const _address = 'address';
+const _host = 'host';
 const _http = 'http';
 const _port = 'port';
 const _tcp = 'tcp';
+
+class ConfigLoaderProvider extends InheritedWidget {
+  final Widget child;
+  final ConfigLoader configLoader;
+  ConfigLoaderProvider({required this.child, required this.configLoader}) : super(child: child);
+
+  static ConfigLoaderProvider of(BuildContext context) {
+    final ConfigLoaderProvider? result = context.dependOnInheritedWidgetOfExactType<ConfigLoaderProvider>();
+    assert(result != null, 'No ConfigLoaderProvider found in context');
+    return result!;
+  }
+
+  @override
+  bool updateShouldNotify(ConfigLoaderProvider old) => old.configLoader != this.configLoader;
+}
 
 Future<String> _loadConfig() {
   return rootBundle.loadString(_configAssetKey);
 }
 
-Future<Config> loadConfig() async {
+Future<Map<String, dynamic>> loadConfigMap() async {
   var data = await _loadConfig();
-  Map<String, dynamic> configMap = jsonDecode(data);
-  return Config(
-    http: HttpConfig.fromMap(configMap[_http]),
-    tcp: TcpConfig.fromMap(configMap[_tcp])
-  );
+  return jsonDecode(data);
+}
+
+class ConfigLoader {
+  final Map<String, dynamic> _data;
+  ConfigLoader(this._data);
+
+  Map<String, dynamic> get _httpData => _data[_http];
+
+  Map<String, dynamic> get _tcpData => _data[_tcp];
+
+  Config get http => Config(_httpData);
+
+  Config get tcp => Config(_tcpData);
 }
 
 class Config {
-  final HttpConfig http;
-  final TcpConfig tcp;
-  Config({required this.http, required this.tcp});
-}
+  final Map<String, dynamic> _data;
+  Config(this._data);
 
-class HttpConfig {
-  final String address;
-  final int port;
-  HttpConfig.fromMap(Map<String, dynamic> map) :
-      address = map[_address],
-      port = map[_port];
-}
-
-class TcpConfig {
-  final String address;
-  TcpConfig.fromMap(Map<String, dynamic> map) :
-      address = map[_address];
+  String get host => _data[_host];
+  int get port => _data[_port];
 }

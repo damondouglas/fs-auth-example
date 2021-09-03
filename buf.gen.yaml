@@ -10,4 +10,4 @@ plugins:
       - require_unimplemented_servers=false
   - name: dart
     out: frontend/lib/src/generated
-
+    opt: grpc

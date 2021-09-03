@@ -2,6 +2,8 @@ package auth
 
 import (
 	"context"
+	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 	"fs-auth-example/backend/internal/environment"
 	"log"
 	"os"
@@ -14,18 +16,28 @@ var (
 )
 
 type Authorizer struct {
+	internal *auth.Client
 	env *environment.Environment
-	id *Identity
 }
 
 func NewAuthorizer(ctx context.Context, env *environment.Environment) (*Authorizer, error) {
-	id, err := NewIdentity(ctx)
+	project, err := env.Project()
+	if err != nil {
+		return nil, err
+	}
+	fb, err := firebase.NewApp(ctx, &firebase.Config{
+		ProjectID: project,
+	})
+	if err != nil {
+		return nil, err
+	}
+	svc, err := fb.Auth(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &Authorizer{
+		internal: svc,
 		env: env,
-		id: id,
 	}, nil
 }
 

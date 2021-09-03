@@ -66,24 +66,3 @@ const UpdateCountResponse$json = const {
 
 /// Descriptor for `UpdateCountResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List updateCountResponseDescriptor = $convert.base64Decode('ChNVcGRhdGVDb3VudFJlc3BvbnNlEhQKBWNvdW50GAEgASgDUgVjb3VudA==');
-const $core.Map<$core.String, $core.dynamic> CounterServiceBase$json = const {
-  '1': 'CounterService',
-  '2': const [
-    const {'1': 'ListCounts', '2': '.counter.v1.ListCountsRequest', '3': '.counter.v1.ListCountsResponse', '4': const {}},
-    const {'1': 'UpdateCount', '2': '.counter.v1.UpdateCountRequest', '3': '.counter.v1.UpdateCountResponse', '4': const {}},
-    const {'1': 'StreamCounts', '2': '.counter.v1.StreamCountsRequest', '3': '.counter.v1.Count', '4': const {}, '6': true},
-  ],
-};
-
-@$core.Deprecated('Use counterServiceDescriptor instead')
-const $core.Map<$core.String, $core.Map<$core.String, $core.dynamic>> CounterServiceBase$messageJson = const {
-  '.counter.v1.ListCountsRequest': ListCountsRequest$json,
-  '.counter.v1.ListCountsResponse': ListCountsResponse$json,
-  '.counter.v1.Count': Count$json,
-  '.counter.v1.UpdateCountRequest': UpdateCountRequest$json,
-  '.counter.v1.UpdateCountResponse': UpdateCountResponse$json,
-  '.counter.v1.StreamCountsRequest': StreamCountsRequest$json,
-};
-
-/// Descriptor for `CounterService`. Decode as a `google.protobuf.ServiceDescriptorProto`.
-final $typed_data.Uint8List counterServiceDescriptor = $convert.base64Decode('Cg5Db3VudGVyU2VydmljZRJNCgpMaXN0Q291bnRzEh0uY291bnRlci52MS5MaXN0Q291bnRzUmVxdWVzdBoeLmNvdW50ZXIudjEuTGlzdENvdW50c1Jlc3BvbnNlIgASUAoLVXBkYXRlQ291bnQSHi5jb3VudGVyLnYxLlVwZGF0ZUNvdW50UmVxdWVzdBofLmNvdW50ZXIudjEuVXBkYXRlQ291bnRSZXNwb25zZSIAEkYKDFN0cmVhbUNvdW50cxIfLmNvdW50ZXIudjEuU3RyZWFtQ291bnRzUmVxdWVzdBoRLmNvdW50ZXIudjEuQ291bnQiADAB');

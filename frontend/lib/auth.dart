@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 
-import 'counts.dart';
-
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
@@ -66,12 +64,17 @@ class _LoginState extends State<Login> {
                 padding: EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return PasswordAuth(email: email, password: password);
-                      }));
+                    if (!_formKey.currentState!.validate()) {
+                      return;
                     }
+                    _login(email, password)
+                    .then((_) {
+                      Navigator.of(context).pushNamed('/counts');
+                    }).catchError((err) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$err'))
+                      );
+                    });
                   },
                   child: Text('Submit'),
                 ),
@@ -84,44 +87,6 @@ class _LoginState extends State<Login> {
   }
 }
 
-class PasswordAuth extends StatefulWidget {
-  final String email;
-  final String password;
+Future<UserCredential> _login(String email, String password) =>
+    FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
 
-  PasswordAuth({required this.email, required this.password});
-
-  @override
-  _PasswordAuthState createState() => _PasswordAuthState();
-}
-
-class _PasswordAuthState extends State<PasswordAuth> {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<UserCredential>(
-        future: FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: widget.email, password: widget.password),
-        builder:
-            (BuildContext context, AsyncSnapshot<UserCredential> snapshot) {
-          if (snapshot.hasError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('${snapshot.error}'),
-            ));
-          }
-          final children = <Widget>[];
-
-          if (snapshot.connectionState != ConnectionState.done) {
-            children.clear();
-            children.add(CircularProgressIndicator());
-          }
-          if (snapshot.hasData) {
-            children.clear();
-            children.add(Counts());
-          }
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: children,
-          );
-        });
-  }
-}

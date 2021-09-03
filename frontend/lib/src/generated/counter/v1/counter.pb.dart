@@ -5,7 +5,6 @@
 // @dart = 2.12
 // ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
 
-import 'dart:async' as $async;
 import 'dart:core' as $core;
 
 import 'package:fixnum/fixnum.dart' as $fixnum;
@@ -281,23 +280,5 @@ class UpdateCountResponse extends $pb.GeneratedMessage {
   $core.bool hasCount() => $_has(0);
   @$pb.TagNumber(1)
   void clearCount() => clearField(1);
-}
-
-class CounterServiceApi {
-  $pb.RpcClient _client;
-  CounterServiceApi(this._client);
-
-  $async.Future<ListCountsResponse> listCounts($pb.ClientContext? ctx, ListCountsRequest request) {
-    var emptyResponse = ListCountsResponse();
-    return _client.invoke<ListCountsResponse>(ctx, 'CounterService', 'ListCounts', request, emptyResponse);
-  }
-  $async.Future<UpdateCountResponse> updateCount($pb.ClientContext? ctx, UpdateCountRequest request) {
-    var emptyResponse = UpdateCountResponse();
-    return _client.invoke<UpdateCountResponse>(ctx, 'CounterService', 'UpdateCount', request, emptyResponse);
-  }
-  $async.Future<Count> streamCounts($pb.ClientContext? ctx, StreamCountsRequest request) {
-    var emptyResponse = Count();
-    return _client.invoke<Count>(ctx, 'CounterService', 'StreamCounts', request, emptyResponse);
-  }
 }
 

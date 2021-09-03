@@ -1,59 +1,85 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:fs_auth_example/api.dart';
+import 'package:fs_auth_example/src/generated/counter/v1/counter.pbgrpc.dart';
+
+import 'config.dart';
 
 class Counts extends StatefulWidget {
+  Counts();
   @override
   _CountsState createState() => _CountsState();
 }
 
 class _CountsState extends State<Counts> {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
   @override
   Widget build(BuildContext context) {
-    if (auth.currentUser == null) {
-      Navigator.of(context).pop();
+    final configLoader = ConfigLoaderProvider.of(context).configLoader;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      Navigator.of(context).pushNamed('/');
     }
-    return Container();
+    return SafeArea(
+      child: Center(
+        child: FutureBuilder<IdTokenResult>(
+          future: user!.getIdTokenResult(),
+          builder: (BuildContext context, AsyncSnapshot<IdTokenResult> snapshot) {
+            if (snapshot.hasError) {
+              return Text('${snapshot.error}');
+            }
+            if (snapshot.connectionState != ConnectionState.done) {
+              return CircularProgressIndicator();
+            }
+            return _CountList(CounterService(configLoader).client(snapshot.data!));
+          },
+        ),
+      ),
+    );
   }
 }
 
-// class Api {
-//   final ChannelMode mode;
-//   late ClientChannel _channel;
-//
-//   Api({required this.mode});
-//
-//   Future<CounterServiceApi> _api() async {
-//     await init();
-//     return CounterServiceApi(_channel as RpcClient);
-//   }
-//
-//   Future init() async {
-//     var _config = await loadConfig();
-//     switch(mode) {
-//       case ChannelMode.tcp:
-//         _channel = _tcp(_config);
-//         break;
-//       case ChannelMode.http:
-//         _channel = _http(_config);
-//         break;
-//     }
-//     return Future.value();
-//   }
-//   ClientChannel _tcp(Config config) => ClientChannel(config.address,
-//     port: config.port,
-//     options: ChannelOptions(
-//       credentials: ChannelCredentials.secure(),
-//     ),
-//   );
-//
-//   ClientChannel _http(Config config) => GrpcWebClientChannel.xhr(
-//       Uri.parse('${config.scheme}://${config.address}:${config.port}')
-//   ) as ClientChannel;
-// }
-//
-// enum ChannelMode {
-//   http,
-//   tcp,
-// }
+class _CountList extends StatefulWidget {
+  final CounterServiceClient counterServiceClient;
+  _CountList(this.counterServiceClient);
+  @override
+  _CountListState createState() => _CountListState();
+}
+
+class _CountListState extends State<_CountList> {
+  Map<String, Count> counts = {};
+  Count myCount = Count();
+  @override
+  Widget build(BuildContext context) {
+    final countStream = widget.counterServiceClient.streamCounts(StreamCountsRequest());
+    final user = FirebaseAuth.instance.currentUser!;
+    countStream.listen((Count count) {
+      setState(() {
+        counts[count.name] = count;
+        if (user.email == count.name) {
+          myCount = count;
+        }
+      });
+    });
+    return Stack(
+      children: [
+        ListView(
+          children: counts.values.map((Count count) => ListTile(
+            title: Text('${count.name}: ${count.count}'),
+          )).toList()
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              widget.counterServiceClient.updateCount(UpdateCountRequest(
+                count: myCount.count + 1,
+              ));
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}

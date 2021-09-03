@@ -26,13 +26,14 @@ func (svc *service) UpdateCount(ctx context.Context, req *counter.UpdateCountReq
 		logger.Println(err)
 		return nil, err
 	}
-	if len(accountInfo.Users) == 0 {
-		err := fmt.Errorf("UpdateCount: no users found with account info retrieved from context")
-		logger.Println(err)
-		return nil, err
-	}
-	user := accountInfo.Users[0]
-	name := user.Email
+	//if len(accountInfo.Users) == 0 {
+	//	err := fmt.Errorf("UpdateCount: no users found with account info retrieved from context")
+	//	logger.Println(err)
+	//	return nil, err
+	//}
+	//user := accountInfo.Users[0]
+	//name := user.Email
+	name := accountInfo.Email()
 	ref, err := svc.fsClient.Counts.GetOrCreate(ctx, name)
 	if err != nil {
 		err = fmt.Errorf("UpdateCount: %w", err)

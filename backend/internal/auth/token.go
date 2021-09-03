@@ -14,10 +14,6 @@ const (
 	ClaimsKey        = "AccountInfo"
 )
 
-func (auth *Authorizer) claims(tok *oauth2.Token) (*AccountInfo, error) {
-	return auth.id.claims(tok)
-}
-
 func (auth *Authorizer) TokenFromContext(ctx context.Context) (*oauth2.Token, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
