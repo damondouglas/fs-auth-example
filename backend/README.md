@@ -16,6 +16,15 @@ Additionally, the project requires setting up the following Google Cloud artifac
 - https://firebase.google.com/products/firestore
 - https://cloud.google.com/identity-platform
 
+## Firestore specific setup
+
+The example assumes a "counts" collection exists in the database.
+
+## Identity Platform specific setup
+
+The example assumes email/password authentication is turned on as the frontend
+example uses this form of identity platform authentication.
+
 # Run 
 
 To run the service locally:
